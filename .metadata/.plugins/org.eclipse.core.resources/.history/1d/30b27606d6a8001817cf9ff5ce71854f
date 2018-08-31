@@ -1,0 +1,6 @@
+package com.im.test;
+
+public class FinalTest {
+
+	static Random random=new Random();
+}

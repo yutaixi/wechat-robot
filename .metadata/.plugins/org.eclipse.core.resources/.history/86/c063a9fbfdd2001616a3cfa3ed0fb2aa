@@ -1,0 +1,145 @@
+package com.im.ui.client;
+
+import iqq.im.QQActionListener;
+import iqq.im.QQException;
+import iqq.im.QQNotifyListener;
+import iqq.im.actor.SwingActorDispatcher;
+import iqq.im.event.QQActionEvent;
+import iqq.im.event.QQNotifyEvent;
+import iqq.im.util.DateUtils;
+
+import java.awt.EventQueue;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+import javax.swing.UIManager;
+
+import com.im.ui.QRCodeFrame;
+import com.wechat.WebWechatClient;
+import com.wechat.WechatClient;
+import com.wechat.bean.WechatContact;
+import com.wechat.bean.WechatUser;
+import com.wechat.core.WechatStore;
+import com.wechat.dao.mysql.service.WechatContactDaoService;
+import com.wechat.dao.mysql.service.WechatUserDaoService;
+import com.wechat.dao.service.IWechatContactDaoService;
+
+public class ImClientService {
+
+	static WechatClient client;
+	    
+	public static WechatClient getClient() {
+		return client;
+	}
+  
+	public void createtClient(final ImListener listener)
+	{
+		 client = new WebWechatClient(new QQNotifyListener() { 
+		        @Override
+		        public void onNotifyEvent(QQNotifyEvent event) { 
+		        	client.handleEvent(event); 
+		            
+		        }
+		    }, new SwingActorDispatcher());
+		 
+		client.getQRcode(new QQActionListener() {
+            @Override
+            public void onActionEvent(QQActionEvent event) {
+            	if (event.getType() == QQActionEvent.Type.EVT_OK) {
+                    try {
+                        BufferedImage verify = (BufferedImage) event.getTarget();
+                        final File qrCodeFile=new File("qrcode"+DateUtils.nowTimestamp()+".png");
+                        ImageIO.write(verify, "png", qrCodeFile);  
+                        EventQueue.invokeLater(new Runnable() {
+            				public void run() {
+            					try { 
+            						UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+            						client.setQrCodeFrame(new QRCodeFrame(qrCodeFile.getPath()));  
+            					} catch (Exception e) {
+            						e.printStackTrace();
+            					}
+            				}
+            			}); 
+                        System.out.println("请扫描在项目根目录下qrcode.png图片");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    System.out.println("获取二维码失败");
+                }
+            }
+        });
+	 
+		client.checkQRCode(new QQActionListener() {
+            @Override
+            public void onActionEvent(QQActionEvent event) {
+                System.out.println("checkQRCode " + event);
+                switch (event.getType()) {
+                    case EVT_OK:
+                    	//mClient.getQrCodeFrame().dispose();
+                    	client.syncContactInfo(new QQActionListener(){
+
+							@Override
+							public void onActionEvent(QQActionEvent event) {
+								if(event.getType() == QQActionEvent.Type.EVT_OK)
+								{
+									WebWechatClient  wechatClient= (WebWechatClient)client;
+									IWechatContactDaoService contactService=new WechatContactDaoService();
+									WechatStore store=wechatClient.getWechatStore(); 
+									contactService.insertOrUpdateContact(store.getBuddyList(), client.getSession().getUser().getUin());
+									contactService.insertOrUpdateContact(store.getGroupList(), client.getSession().getUser().getUin());
+									WechatUserDaoService userDaoService=new WechatUserDaoService();
+									WechatContact user=(WechatUser)client.getSession().getUser();
+									userDaoService.saveUser((WechatUser)user);
+									Map<String, WechatContact> contact=store.getBuddyList();
+									if(user.getNickName().equalsIgnoreCase("白石传媒"))
+									{
+										client.modRemark(contact, null);
+										 /**
+										for(WechatContact temp : store.getChatRoom().values()) 
+										{
+											if("于泰喜".equalsIgnoreCase(temp.getNickName()))
+											{
+												List<WechatContact> users=new ArrayList<WechatContact>();
+												users.add(temp);
+												mClient.verifyUser(users, null, null);
+											}
+										}
+										*/
+										
+									}
+								} 
+							}
+                    		
+                    	});
+                    	client.batchGetContactInfo(((WebWechatClient)client).getWechatStore().getChatRoom(), null);
+                    	client.beginPollMsg();
+                    	 
+                    	listener.onEvent(null ); 
+                    	
+                        break;
+                    case EVT_ERROR:
+                        QQException ex = (QQException) (event.getTarget());
+                        QQException.QQErrorCode code = ex.getError();
+                        switch (code) {
+                            // 二维码有效,等待用户扫描
+                            // 二维码已经扫描,等用户允许登录
+                            case QRCODE_OK:
+                            case QRCODE_AUTH:
+                                try {
+                                    Thread.sleep(3000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                // 继续检查二维码状态
+                                client.checkQRCode(this);
+                                break;
+                        }
+                        break;
+                }
+            }
+        });
+     }
+}

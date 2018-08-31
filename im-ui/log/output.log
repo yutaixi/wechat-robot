@@ -1,0 +1,2 @@
+ERROR (com.im.utils.FileUtil:169)- read file error:java.io.FileNotFoundException: .\data\distributeLog.txt (系统找不到指定的文件。)
+INFO (com.im.security.service.LicenseUtil:181)- 读取license失败，未找到key.lic文件

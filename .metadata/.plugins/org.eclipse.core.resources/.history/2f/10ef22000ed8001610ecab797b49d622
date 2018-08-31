@@ -1,0 +1,40 @@
+package com.im.ui.schedule; 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.im.timer.ScheduleTask;
+import com.subscription.Subscription;
+import com.subscription.content.CategoriedContent;
+import com.subscription.content.ContentCategory;
+import com.subscription.content.ContentType;
+import com.subscription.content.SubscriptionContent;
+import com.wechat.WebWechatClient; 
+import com.wechat.WechatClient;
+import com.wechat.bean.WechatContact;
+import com.wechat.core.WechatContext;
+import com.wechat.core.WechatStore;
+import com.wechat.dao.mysql.service.SubscriptionDaoService;
+
+public class SendMsgTask extends ScheduleTask{
+
+	private WechatClient client;
+	 
+	
+	private SubscriptionDaoService subscriptionDaoService=new SubscriptionDaoService();
+	@Override
+	public void run() { 
+		if(!getContactMap())
+		{
+			return;
+		}
+		 
+		 
+	}
+	
+	 
+	 
+
+}

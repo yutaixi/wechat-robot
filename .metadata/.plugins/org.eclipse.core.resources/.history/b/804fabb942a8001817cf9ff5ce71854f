@@ -1,0 +1,21 @@
+package com.im.test;
+
+public class Parent {
+
+	public Parent()
+	{
+		System.out.println("init parent");
+	}
+}
+class Child extends Parent{
+	
+	public child()
+	{
+		System.out.println("init child");
+	}
+}
+
+class son extends child{
+	
+	public son
+}

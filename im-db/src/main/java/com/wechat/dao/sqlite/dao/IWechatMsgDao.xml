@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.wechat.dao.sqlite.dao.IWechatMsgDao">
+       
+       <insert id="saveMsg"  >
+       INSERT INTO wx_im_msg 
+       (im_from, 
+       im_to, 
+       im_type, 
+       msg_id, 
+       from_uer_name, 
+       to_user_name, 
+       msg_type, 
+       content, 
+       status, 
+       file_name,
+        file_size, 
+        media_id, 
+        url, 
+        app_msg_type, 
+        status_notify_code, 
+        status_notify_user_name, 
+        ticket, 
+        img_height, 
+        img_width, 
+        sub_msg_type, 
+        new_msg_id, 
+        from_alias,
+        from_remark_name,
+        to_alias,
+        to_uid,
+        from_uid
+        <if test="msg.RecommendInfo != null">
+         ,
+        rec_user_name,
+        rec_nick_name,
+        rec_province,
+        rec_city,
+        rec_content,
+        rec_alias,
+        rec_scene,
+        rec_sex,
+        rec_opcode
+       </if>
+        
+        ) 
+       VALUES 
+       (#{msg.from,jdbcType=VARCHAR},
+       #{msg.to,jdbcType=VARCHAR},
+       #{msg.type,jdbcType=VARCHAR},
+       #{msg.MsgId,jdbcType=VARCHAR},
+       #{msg.FromUserName,jdbcType=VARCHAR},
+       #{msg.ToUserName,jdbcType=VARCHAR},
+       #{msg.MsgType,jdbcType=NUMERIC}, 
+       #{msg.Content,jdbcType=VARCHAR},
+       #{msg.Status,jdbcType=NUMERIC}, 
+       #{msg.FileName,jdbcType=VARCHAR},
+       #{msg.FileSize,jdbcType=NUMERIC}, 
+       #{msg.MediaId,jdbcType=VARCHAR}, 
+       #{msg.Url,jdbcType=VARCHAR},
+       #{msg.AppMsgType,jdbcType=NUMERIC}, 
+       #{msg.StatusNotifyCode,jdbcType=NUMERIC}, 
+       #{msg.StatusNotifyUserName,jdbcType=VARCHAR},
+       #{msg.Ticket,jdbcType=VARCHAR},
+       #{msg.ImgHeight,jdbcType=NUMERIC}, 
+       #{msg.ImgWidth,jdbcType=NUMERIC}, 
+       #{msg.SubMsgType,jdbcType=NUMERIC}, 
+       #{msg.NewMsgId,jdbcType=NUMERIC}, 
+       #{msg.fromAlias,jdbcType=VARCHAR},
+       #{msg.fromRemarkName,jdbcType=VARCHAR},
+       #{msg.toAlias,jdbcType=VARCHAR},
+       #{msg.toUid,jdbcType=NUMERIC},
+       #{msg.fromUid,jdbcType=NUMERIC}
+      <if test="msg.RecommendInfo != null">
+        ,
+       #{msg.RecommendInfo.UserName,jdbcType=VARCHAR},
+       #{msg.RecommendInfo.NickName,jdbcType=VARCHAR},
+       #{msg.RecommendInfo.Province,jdbcType=VARCHAR},
+       #{msg.RecommendInfo.City,jdbcType=VARCHAR},
+       #{msg.RecommendInfo.Content,jdbcType=VARCHAR},
+       #{msg.RecommendInfo.Alias,jdbcType=VARCHAR},
+       #{msg.RecommendInfo.Scene,jdbcType=NUMERIC},
+       #{msg.RecommendInfo.Sex,jdbcType=NUMERIC},
+       #{msg.RecommendInfo.OpCode,jdbcType=NUMERIC}
+       </if>
+         
+       );
+    </insert>
+     
+     
+</mapper>

@@ -1,0 +1,68 @@
+1483252816217	Move compilation unit
+1483253029517	Delete element
+1483254589138	Rename type 'WechatCategoryModule'
+1483254647902	Rename type 'WechatGetContactAction'
+1483259080644	Rename type 'WechatGetBuddyListAction'
+1483260662230	Rename method 'syncGroupInfo'
+1483262739184	Delete element
+1483262743734	Move compilation units
+1483262963496	Delete element
+1483263011975	Delete element
+1483265320801	Delete element
+1483265451511	Delete element
+1483338806473	Delete element
+1483339744153	Rename type 'WeixinDbService'
+1483339830661	Rename package 'com.im.mongodb'
+1483339840602	Rename package 'com.im.mysql'
+1483339854203	Rename package 'com.im.sqlite'
+1483340742020	Delete element
+1483343936200	Delete element
+1483343938362	Delete element
+1483344095109	Rename type 'WeixinUser'
+1483344383093	Rename resource 'mybatis.xml'
+1483344400506	Move file
+1483344505646	Rename package 'com.im.mybatis.config'
+1483344594102	Rename package 'com.wechat.db'
+1483344612121	Move file
+1483344617093	Delete element
+1483344697074	Rename resource 'UserDaoMapper.xml'
+1483344781693	Delete element
+1483345318816	Delete element
+1483345553952	Copy file
+1483346334680	Rename type 'UserDaoTest'
+1483348198070	Rename type 'IWeixinDBService'
+1483349829348	Delete element
+1483349930783	Delete element
+1483349989809	Delete element
+1483350001893	Move compilation unit
+1483350012848	Move compilation unit
+1483350019367	Move compilation unit
+1483350031103	Move compilation unit
+1483350375214	Delete element
+1483350410889	Move compilation unit
+1483350437199	Move compilation unit
+1483350440583	Delete element
+1483350443917	Delete element
+1483350455266	Delete element
+1483350883610	Rename type 'IWechatDaoService'
+1483350995779	Delete element
+1483351703874	Copy file
+1483366311013	Delete element
+1483370372386	Rename type 'IUserDaoService'
+1483409164398	Delete element
+1483429003456	Delete element
+1483453537293	Copy compilation unit
+1483455051912	Copy compilation unit
+1483580009617	Delete element
+1483598444079	Rename type 'Subscription'
+1483598512298	Copy file
+1483598574756	Rename resource 'IContentDao.xml'
+1483598580652	Rename resource 'ISubscriptionContentDaoDao.xml'
+1483607263926	Rename type 'ISubscriptionContentDao'
+1483607284211	Rename resource 'ISubscriptionContentDao.xml'
+1483612863960	Rename type 'SubscriptionContentDaoService'
+1483676754615	Delete element
+1483677033854	Delete element
+1483677037362	Delete element
+1483695159536	Delete element
+1483764455296	Copy packages

@@ -1,0 +1,183 @@
+package com.im.security;
+  
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.Date; 
+
+import org.ini4j.Config;
+import org.ini4j.Ini;
+import org.ini4j.InvalidFileFormatException;
+import org.ini4j.Profile.Section; 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory; 
+
+import com.im.rsa.Base64;
+import com.im.rsa.RSAEncrypt;  
+import com.im.utils.DateUtils;
+ 
+
+public class LicenseUtil {
+
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(LicenseUtil.class);
+	
+	private static final String DATA_SECTION="DATA";
+	private static final String esn_data="esn";
+	private static final String date_data="date";
+	private static final String FRIEND_MANAGE_ENABLED_DATA="friendManage";
+	private static final String KEYWORD_MANAGE_ENABLED_DATA="keywordMange";
+	private static final String MAX_KEYWORD_NUM_DATA="maxkeywordNum";
+	private static final String MAX_CLIENT_NUM_DATA="maxClientNum";
+	private static final String SIGN_SECTION="SIGN";
+	private static final String sign_data="sign";
+	private static final String licPath=System.getProperty("user.dir")+"/key/";
+	private static final String lic_file_name="key.lic";
+	private static final String pubKeyPath=System.getProperty("user.dir")+"/key/";
+	private static final String privateKeyPath=System.getProperty("user.dir")+"/key/";
+	public static void main(String[] args)
+	{ 
+		try {
+			//00-E0-62-12-88-BB
+			//AC-81-12-2B-0F-01
+			//9C-B7-0D-11-BF-76
+			//F0-DE-F1-5D-7D-DB
+			//60-A4-4C-5E-CA-43
+			//AC-81-12-2B-0F-01
+			//30-5A-3A-5A-3B-A4;00-5A-39-DA-4B-A5;00-50-56-C0-00-01;00-50-56-C0-00-08
+			License lic=new License();
+			lic.setEsn("74-27-EA-CB-BF-CB;00-50-56-C0-00-01;00-50-56-C0-00-08;08-57-00-27-D2-F1;08-57-00-27-D2-F1");
+			lic.setDate(DateUtils.getGMTTimeMillisStr("2017-04-26 23:30:59"));
+			generateLic(lic); 
+			System.out.println(licPath+"key.lic");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	//	System.out.println(verifyLic());
+	}
+	
+	public static void generateLic(License license) throws IOException
+	{
+		File licFilePath=new File(licPath);
+		if(!licFilePath.exists())
+		{
+			licFilePath.mkdirs(); 
+		}
+		File lic=new File(licPath+"key.lic");
+		if(!lic.exists())
+		{
+			lic.createNewFile();
+		}
+		System.out.println(licPath);
+		Config cfg = new Config();  
+        // 生成配置文件的URL  
+		cfg.setMultiSection(false);  
+		cfg.setFileEncoding(Charset.forName("UTF-8"));
+		cfg.setMultiOption(false); 
+        Ini ini = new Ini();  
+        ini.setConfig(cfg);
+        try {
+        	 
+			ini.load(lic); 
+			Section dataSection=ini.add(DATA_SECTION);
+			dataSection.add(esn_data,license.getEsn() );
+			dataSection.add(date_data, license.getDate());
+			String plainText=license.toString();
+			byte[] cipherData=RSAEncrypt.encrypt(RSAEncrypt.loadPrivateKeyByStr(RSAEncrypt.loadPrivateKeyByFile(privateKeyPath)),plainText.getBytes());
+			String cipher=Base64.encode(cipherData);
+			Section signSection=ini.add(SIGN_SECTION); 
+			signSection.add(sign_data, cipher); 
+			ini.store(lic);
+		} catch (InvalidFileFormatException e) {
+			LOGGER.error("读取license文件错误 InvalidFileFormatException:"+e);
+		} catch (IOException e) {
+			LOGGER.error("读取license文件错误 IOException:"+e);
+		} catch (Exception e) {
+			LOGGER.error("读取license文件错误 Exception:"+e);
+		}
+	}
+	
+	public static License loadLic()
+	{
+		License license =new License();
+		File lic=new File(licPath+lic_file_name);
+		if(!lic.exists())
+		{
+			LOGGER.info("读取license失败，未找到key.lic文件");
+			return null;
+		}
+		System.out.println(licPath);
+		Config cfg = new Config();  
+        // 生成配置文件的URL  
+		cfg.setMultiSection(false);  
+        Ini ini = new Ini();  
+        ini.setConfig(cfg);
+        try {
+        	 
+			ini.load(lic); 
+			Section dataSection=ini.get(DATA_SECTION);
+			String esn=dataSection.get(esn_data);
+			license.setEsn(esn);
+			String date=dataSection.get(date_data);
+			license.setDate(date);
+			Section signSection=ini.get(SIGN_SECTION);
+			String sign=signSection.get(sign_data); 
+			license.setSign(sign);
+        }catch (InvalidFileFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return license;
+	}
+	
+	public static License verifyLic() {
+		License license = loadLic();
+		if(license==null)
+		{
+			return null;
+		}
+		license.setValid(false);
+		LOGGER.info("已读取license文件");
+		byte[] res;
+		try {
+			res = RSAEncrypt.decrypt(RSAEncrypt.loadPublicKeyByStr(RSAEncrypt
+					.loadPublicKeyByFile(pubKeyPath)), Base64.decode(license
+					.getSign()));
+			// 原文
+			String restr = new String(res);
+			if (!restr.equalsIgnoreCase(license.toString())) {
+				LOGGER.error("license内容被修改，验证不通过");
+				return license;
+			}
+			LOGGER.info("license加密指纹验证通过");
+			Date netTime = TimeUtil.getCurrentTimeSync();
+			Date licTime = DateUtils.getTime(Long.valueOf(license.getDate()));
+			if (netTime.after(licTime)) {
+				LOGGER.error("license到期时间已过期");
+				return license;
+			}
+			LOGGER.info("license 时间尚未过期");
+			String mac = MacUtil.getMac();
+			if (!license.getEsn().contains(mac)&& !license.getEsn().contains("any") ) {
+				LOGGER.error("license中ESN与设备不匹配");
+				return license;
+			}
+			LOGGER.info("license中ESN与设备匹配成功");
+			LOGGER.info("license验证成功");
+			license.setValid(true);
+			return license;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return license;
+
+	}
+}

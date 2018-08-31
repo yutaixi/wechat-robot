@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.wechat.dao.mysql.dao.IUserDao">
+      
+    <select id="selectAll" resultType="com.wechat.bean.WechatUser">
+        select id,user_name userName from weixin.wx_user
+    </select>
+    
+      <insert id="saveUser"  >
+       insert  INTO weixin.wx_user 
+       ( 
+        user_name, 
+        head_img_url, 
+        nick_name, 
+        py_quanpin, 
+        sex, 
+        uin, 
+        verify_flag,
+        alias, 
+        province, 
+        city ,
+        signature 
+        ) 
+       VALUES 
+      (
+       #{user.UserName,jdbcType=VARCHAR},
+       #{user.HeadImgUrl,jdbcType=VARCHAR}, 
+       #{user.NickName,jdbcType=VARCHAR},
+       #{user.PYQuanPin,jdbcType=VARCHAR},
+       #{user.Sex,jdbcType=NUMERIC},
+       #{user.Uin,jdbcType=NUMERIC},
+       #{user.VerifyFlag,jdbcType=NUMERIC},
+       #{user.Alias,jdbcType=VARCHAR},
+       #{user.Province,jdbcType=VARCHAR},
+       #{user.City,jdbcType=VARCHAR},
+       #{user.Signature,jdbcType=VARCHAR}
+      )
+      on DUPLICATE KEY UPDATE 
+       user_name= #{user.UserName,jdbcType=VARCHAR},
+       head_img_url= #{user.HeadImgUrl,jdbcType=VARCHAR}, 
+       nick_name= #{user.NickName,jdbcType=VARCHAR},
+       py_quanpin= #{user.PYQuanPin,jdbcType=VARCHAR},
+       sex= #{user.Sex,jdbcType=NUMERIC}, 
+       verify_flag= #{user.VerifyFlag,jdbcType=NUMERIC},
+       alias= #{user.Alias,jdbcType=VARCHAR},
+       province= #{user.Province,jdbcType=VARCHAR},
+       city=#{user.City,jdbcType=VARCHAR},
+       signature= #{user.Signature,jdbcType=VARCHAR} 
+       ; 
+    </insert>
+     
+     
+</mapper>

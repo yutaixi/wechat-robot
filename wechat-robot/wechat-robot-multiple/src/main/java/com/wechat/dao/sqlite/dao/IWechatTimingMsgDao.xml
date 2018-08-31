@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.wechat.dao.sqlite.dao.IWechatTimingMsgDao">
+       
+       <insert id="saveTimingMsg" useGeneratedKeys="true" keyProperty="msg.id"  >
+       INSERT INTO wx_timing_msg 
+       ( 
+       msg_type,
+       content,
+       display_order,
+       period,
+       creation_date,
+       last_update_date
+       )
+       VALUES 
+       ( 
+       #{msg.MsgType,jdbcType=VARCHAR},
+       #{msg.Content,jdbcType=VARCHAR},
+       #{msg.displayOrder,jdbcType=NUMERIC},
+       #{msg.period,jdbcType=NUMERIC},
+       datetime('now','+8 hour'),
+       datetime('now','+8 hour')
+       );
+    </insert>
+     
+     <update id="updateTimingMsg"> 
+     update wx_timing_msg set
+     msg_type=#{msg.MsgType,jdbcType=VARCHAR},
+     content= #{msg.Content,jdbcType=VARCHAR},
+     display_order=#{msg.displayOrder,jdbcType=NUMERIC},
+     period=#{msg.period,jdbcType=NUMERIC},
+     last_update_date=datetime('now','+8 hour')
+     where id=#{msg.id,jdbcType=NUMERIC}
+     </update>
+     
+     <select id="queryAllTimingMsg" resultType="com.im.base.schedule.WechatTimingMsgVO"> 
+     select id,msg_type MsgType,content Content ,display_order displayOrder,period
+     from wx_timing_msg 
+     order by displayOrder
+     </select>
+     
+     <delete id="deleteTimingMsg">
+     delete from wx_timing_msg where id=#{msg.id,jdbcType=NUMERIC}
+     
+     </delete>
+     
+</mapper>

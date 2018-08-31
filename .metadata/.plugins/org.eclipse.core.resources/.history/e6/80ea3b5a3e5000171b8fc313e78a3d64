@@ -1,0 +1,336 @@
+package com.im.security.service;
+  
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.Date; 
+
+import org.ini4j.Config;
+import org.ini4j.Ini;
+import org.ini4j.InvalidFileFormatException;
+import org.ini4j.Profile.Section; 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory; 
+
+import com.im.rsa.RSAEncrypt;  
+import com.im.security.AutoReplyVideo;
+import com.im.security.EnglishSignUp;
+import com.im.security.GroupManage;
+import com.im.security.License;
+import com.im.security.TimingMsg;
+import com.im.utils.DateUtils;
+import com.im.utils.encrypt.Base64;
+ 
+
+public class LicenseUtil {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(LicenseUtil.class);
+	
+	private static final String DATA_SECTION="DATA";
+	private static final String esn_data="esn";
+	private static final String date_data="date";
+	private static final String lic_ver="licVersion";
+	
+	private static final String SECTION_AUTO_REPLY_VIDEO="AUTO REPLY VIDEO";
+	private static final String AUTO_REPLY_VIDEO_ENABLE="autoReplyVideoEnable";
+	private static final String SECTION_GROUP_MANAGE="GROUP MANAGEMENT";
+	private static final String ENABLE_GROUP_INVITE="enableGroupInvite";
+	private static final String ENABLE_GROUP_CUSTOMIZE="enableGroupCustomize";
+	
+	private static final String SECTION_TIMING_MSG="TIMING MSG";
+	private static final String ENABLE_TIMING_MSG="enableTimingMsg";
+	
+	private static final String SECTION_ENGLISH_SIGNUP="ENGLISH SIGN UP";
+	private static final String ENABLE_ENGLISH_SIGNUP="enableEnglishSignUp";
+	
+	private static final String FRIEND_MANAGE_ENABLED_DATA="friendManage";
+	private static final String KEYWORD_MANAGE_ENABLED_DATA="keywordMange";
+	private static final String MAX_KEYWORD_NUM_DATA="maxkeywordNum";
+	private static final String MAX_CLIENT_NUM_DATA="maxClientNum";
+	private static final String SIGN_SECTION="SIGN";
+	private static final String sign_data="sign";
+	private static final String licPath=System.getProperty("user.dir")+"/key/";
+	private static final String lic_file_name="key.lic";
+	private static final String pubKeyPath=System.getProperty("user.dir")+"/key/";
+	private static final String privateKeyPath=System.getProperty("user.dir")+"/key/";
+	public static void main(String[] args)
+	{ 
+		try {
+			 
+			License lic=new License();
+			String esn="52-54-00-75-6D-A3;52-54-00-C6-E6-3C";
+			String date="2017-07-11 23:59:59"; 
+			lic.setEsn(esn+";"+date); 
+			lic.setVersion("1.0");
+			//可选功能
+//			AutoReplyVideo autoReplyVideo=new AutoReplyVideo();
+//			autoReplyVideo.setEnable(true);
+//			lic.setAutoReplyVideo(autoReplyVideo);
+//			
+			//群组邀请
+			GroupManage groupManage=new GroupManage();
+			groupManage.setGroupInvite(true);
+			groupManage.setEnableGroupCustomizePanel(false);
+			lic.setGroupManage(groupManage);
+			
+			//定时消息
+			TimingMsg timingMsg=new TimingMsg();
+			timingMsg.setEnableTimingMsg(true);
+			lic.setTimingMsg(timingMsg);
+			//英语集训
+//			EnglishSignUp englishSignUp=new EnglishSignUp();
+//			englishSignUp.setEnable(true);
+//			lic.setEnglishSignUp(englishSignUp);
+			  
+			lic.setDate(DateUtils.getGMTTimeMillisStr(date));
+			generateLic(lic); 
+			System.out.println(licPath+"key.lic");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		License lic=verifyLic();
+//		System.out.println(lic.isValid());
+	}
+	
+	public static void generateLic(License license) throws IOException
+	{
+		File licFilePath=new File(licPath);
+		if(!licFilePath.exists())
+		{
+			licFilePath.mkdirs(); 
+		}
+		File lic=new File(licPath+"key.lic");
+		if(!lic.exists())
+		{
+			lic.createNewFile();
+		}
+		System.out.println(licPath);
+		Config cfg = new Config();  
+        // 生成配置文件的URL  
+		cfg.setMultiSection(false);  
+		cfg.setFileEncoding(Charset.forName("UTF-8"));
+		cfg.setMultiOption(false); 
+        Ini ini = new Ini();  
+        ini.setConfig(cfg);
+        try {
+        	 //读取文件
+			ini.load(lic); 
+			Section dataSection=ini.get(DATA_SECTION);
+			if(dataSection==null)
+			{
+				dataSection=ini.add(DATA_SECTION); 
+			}
+			dataSection.add(esn_data,license.getEsn() );
+			dataSection.add(date_data, license.getDate());
+			dataSection.add(lic_ver, license.getVersion());
+			
+			//可选功能
+			if(license.getAutoReplyVideo()!=null)
+			{
+				Section autoReplyVideoSection=ini.add(SECTION_AUTO_REPLY_VIDEO);
+				autoReplyVideoSection.add(AUTO_REPLY_VIDEO_ENABLE,license.getAutoReplyVideo().isEnable() ); 
+			}
+			
+			if(license.getTimingMsg()!=null)
+			{
+				Section timingMsgSection=ini.add(SECTION_TIMING_MSG);
+				timingMsgSection.add(ENABLE_TIMING_MSG,license.getTimingMsg().isEnableTimingMsg() ); 
+			}
+			if(license.getGroupManage()!=null)
+			{
+				Section groupManageSection=ini.add(SECTION_GROUP_MANAGE);
+				groupManageSection.add(ENABLE_GROUP_INVITE,license.getGroupManage().isGroupInvite()); 
+				groupManageSection.add(ENABLE_GROUP_CUSTOMIZE, license.getGroupManage().isEnableGroupCustomizePanel());
+			}
+			if(license.getEnglishSignUp()!=null)
+			{
+				Section englishSignUpSection=ini.add(SECTION_ENGLISH_SIGNUP);
+				englishSignUpSection.add(ENABLE_ENGLISH_SIGNUP, license.getEnglishSignUp().isEnable());
+			}
+			
+			
+			String plainText=license.toString();
+			System.out.println(plainText);
+			byte[] cipherData=RSAEncrypt.encrypt(RSAEncrypt.loadPrivateKeyByStr(RSAEncrypt.loadPrivateKeyByFile(privateKeyPath)),plainText.getBytes());
+			String cipher=Base64.encode(cipherData);
+			Section signSection=ini.get(SIGN_SECTION);
+			if(signSection==null)
+			{
+				signSection=ini.add(SIGN_SECTION); 
+				
+			}
+			signSection.add(sign_data, cipher); 
+			 
+			ini.store(lic);
+		} catch (InvalidFileFormatException e) {
+			LOGGER.error("读取license文件错误 InvalidFileFormatException:"+e);
+		} catch (IOException e) {
+			LOGGER.error("读取license文件错误 IOException:"+e);
+		} catch (Exception e) {
+			LOGGER.error("读取license文件错误 Exception:"+e);
+		}
+	}
+	
+	public static License loadLic()
+	{
+		License license =new License();
+		File lic=new File(licPath+lic_file_name);
+		if(!lic.exists())
+		{
+			LOGGER.info("读取license失败，未找到key.lic文件");
+			return null;
+		}
+		System.out.println(licPath);
+		Config cfg = new Config();  
+        // 生成配置文件的URL  
+		cfg.setMultiSection(false);  
+        Ini ini = new Ini();  
+        ini.setConfig(cfg);
+        try {
+        	 
+			ini.load(lic); 
+			Section dataSection=ini.get(DATA_SECTION);
+			String esn=dataSection.get(esn_data);
+			license.setEsn(esn);
+			String date=dataSection.get(date_data);
+			license.setDate(date);
+			String version=dataSection.get(lic_ver);
+			license.setVersion(version);
+			//可选功能u
+			Section autoReplyVideoSection=ini.get(SECTION_AUTO_REPLY_VIDEO);
+			if(autoReplyVideoSection!=null)
+			{ 
+				AutoReplyVideo autoReplyVideo=new AutoReplyVideo();
+				String autoReplyVideoEnable=autoReplyVideoSection.get(AUTO_REPLY_VIDEO_ENABLE);
+				if(autoReplyVideoEnable!=null && "true".equalsIgnoreCase(autoReplyVideoEnable))
+				{
+					autoReplyVideo.setEnable(true);
+				}else
+				{
+					autoReplyVideo.setEnable(false);
+				}
+				license.setAutoReplyVideo(autoReplyVideo);
+			}
+			
+			Section timingMsgSection=ini.get(SECTION_TIMING_MSG);
+			if(timingMsgSection!=null)
+			{
+				TimingMsg timingMsg=new TimingMsg();
+				String timingMsgEnable=timingMsgSection.get(ENABLE_TIMING_MSG);
+				if(timingMsgEnable!=null && "true".equalsIgnoreCase(timingMsgEnable))
+				{
+					timingMsg.setEnableTimingMsg(true);
+				}else
+				{
+					timingMsg.setEnableTimingMsg(false);
+				}
+				license.setTimingMsg(timingMsg);
+			}
+			
+			Section englishSignUpSection=ini.get(SECTION_ENGLISH_SIGNUP);
+			if(englishSignUpSection!=null)
+			{
+				EnglishSignUp englishSignUp=new EnglishSignUp();
+				String enableEnglishSignUp=englishSignUpSection.get(ENABLE_ENGLISH_SIGNUP);
+				if(enableEnglishSignUp!=null && "true".equalsIgnoreCase(enableEnglishSignUp))
+				{
+					englishSignUp.setEnable(true);
+				}else
+				{
+					englishSignUp.setEnable(false);
+				}
+				license.setEnglishSignUp(englishSignUp);
+			}
+			
+			Section groupManageSection=ini.get(SECTION_GROUP_MANAGE);
+			if(groupManageSection!=null)
+			{
+				GroupManage groupManage=new GroupManage();
+				String groupManageEnable=groupManageSection.get(ENABLE_GROUP_INVITE);
+				if(groupManageEnable!=null && "true".equalsIgnoreCase(groupManageEnable))
+				{
+					groupManage.setGroupInvite(true);
+				}else
+				{
+					groupManage.setGroupInvite(false);
+				}
+				String groupCustomizeEnable=groupManageSection.get(ENABLE_GROUP_CUSTOMIZE);
+				if(groupCustomizeEnable!=null && "true".equalsIgnoreCase(groupCustomizeEnable))
+				{
+					groupManage.setEnableGroupCustomizePanel(true);
+				}else
+				{
+					groupManage.setEnableGroupCustomizePanel(false);
+				}
+				 
+				license.setGroupManage(groupManage);
+			}
+			
+			Section signSection=ini.get(SIGN_SECTION);
+			String sign=signSection.get(sign_data); 
+			license.setSign(sign);
+        }catch (InvalidFileFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return license;
+	}
+	
+	public static License verifyLic() {
+		License license = loadLic();
+		if(license==null)
+		{
+			return null;
+		}
+		license.setValid(false);
+		LOGGER.info("已读取license文件");
+		byte[] res;
+		try {
+			res = RSAEncrypt.decrypt(RSAEncrypt.loadPublicKeyByStr(RSAEncrypt
+					.loadPublicKeyByFile(pubKeyPath)), Base64.decode(license
+					.getSign()));
+			// 原文
+			String restr = new String(res);
+			if (!restr.equalsIgnoreCase(license.toString())) {
+				LOGGER.error("license内容被修改，验证不通过");
+				return license;
+			}
+			LOGGER.info("license加密指纹验证通过");
+			Date netTime = TimeUtil.getCurrentTimeSync();
+			Date licTime = DateUtils.getTime(Long.valueOf(license.getDate()));
+			if (netTime.after(licTime)) {
+				LOGGER.error("license到期时间已过期");
+				return license;
+			}
+			LOGGER.info("license 时间尚未过期");
+			
+			if(!license.getEsn().contains("any"))
+			{
+				String mac = MacUtil.getMac();
+				LOGGER.info("mac:"+mac);
+				if (!license.getEsn().contains(mac) ) {
+					LOGGER.error("license中ESN与设备不匹配");
+					return license;
+				}
+			}
+			
+			LOGGER.info("license中ESN与设备匹配成功");
+			LOGGER.info("license验证成功");
+			license.setValid(true);
+			return license;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			LOGGER.error("license校验异常:"+e);
+		}
+		return license;
+
+	}
+}

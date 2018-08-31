@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/wechat-robot-master/src/main/java/me/biezhi/wechat/util/DateUtils.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="me.biezhi.wechat.util.DateUtils"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="wechat-robot-master"/>
+</launchConfiguration>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC" />
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.jdbc.Driver" />
+                <property name="url" value="jdbc:mysql://localhost:3306/weixin?zeroDateTimeBehavior=convertToNull&amp;allowMultiQueries=true" />
+                <property name="username" value="weixin" />
+                <property name="password" value="1937294381" />
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <mapper resource="com/wechat/dao/IUserDao.xml"/>
+        <mapper resource="com/wechat/dao/IWechatMsgDao.xml"/>
+        <mapper resource="com/wechat/dao/IContactDao.xml"/>
+        <mapper resource="com/wechat/dao/ISubscriptionDao.xml"/> 
+    </mappers>
+    <!-- 
+    <property name="url" value="jdbc:mysql://localhost:3306/weixin?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull" />
+        -->        
+</configuration>

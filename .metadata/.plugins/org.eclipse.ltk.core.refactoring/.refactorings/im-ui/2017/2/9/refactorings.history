@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring accessors="true" comment="Delete 3 elements from project &apos;im-ui&apos;&#x0D;&#x0A;- Original project: &apos;im-ui&apos;&#x0D;&#x0A;- Original elements:&#x0D;&#x0A;     config.properties&#x0D;&#x0A;     keyword.txt&#x0D;&#x0A;     redbag.txt" description="Delete elements" element1="config/keyword.txt" element2="config/redbag.txt" element3="config/config.properties" elements="0" flags="589830" id="org.eclipse.jdt.ui.delete" resources="3" stamp="1488182108449" subPackages="false" version="1.0"/>
+</session>

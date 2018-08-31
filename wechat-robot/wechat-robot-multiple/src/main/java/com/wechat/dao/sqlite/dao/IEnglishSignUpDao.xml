@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.wechat.dao.sqlite.dao.IEnglishSignUpDao">
+       
+       <insert id="save" useGeneratedKeys="true" keyProperty="signUpVO.id"  >
+       INSERT INTO wx_english_sign_up 
+       ( 
+       nick_name,
+       age,
+       basis,
+       remark,
+       class,
+       creation_date,
+       last_update_date
+       )
+       VALUES 
+       ( 
+       #{signUpVO.nickName,jdbcType=VARCHAR},
+       #{signUpVO.age,jdbcType=NUMERIC},
+       #{signUpVO.basis,jdbcType=VARCHAR},
+       #{signUpVO.remark,jdbcType=VARCHAR},
+       #{signUpVO.className,jdbcType=VARCHAR},
+       datetime('now','+8 hour'),
+       datetime('now','+8 hour')
+       );
+    </insert>
+     
+      
+     <select id="queryAll" resultType="com.im.base.customize.EnglishSignUpVO"> 
+     select id,nick_name nickName,age age,basis basis ,remark remark,class className,creation_date creationDate
+     from wx_english_sign_up  
+     order by creation_date DESC
+     </select>
+      
+</mapper>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.wechat.dao.sqlite.dao.IGroupInviteStatisticsDao">
+       
+       <insert id="save" useGeneratedKeys="true" keyProperty="inviteVO.id"  >
+       INSERT INTO wx_group_invite_statistics 
+       ( 
+       inviter,
+       be_invited,
+       group_name,
+       opt, 
+       member_count,
+       creation_date,
+       last_update_date
+       )
+       VALUES 
+       ( 
+       #{inviteVO.inviter,jdbcType=VARCHAR},
+       #{inviteVO.beInvited,jdbcType=VARCHAR},
+       #{inviteVO.groupName,jdbcType=VARCHAR},
+       #{inviteVO.option,jdbcType=VARCHAR}, 
+       #{inviteVO.memberCount,jdbcType=NUMERIC}, 
+       datetime('now','+8 hour'),
+       datetime('now','+8 hour')
+       );
+    </insert>
+     
+      
+     <select id="query" resultType="com.im.base.customize.GroupInviteVO"> 
+      select id,inviter inviter,be_invited beInvited,group_name groupName,opt option,member_count memberCount, creation_date creationDate
+     from wx_group_invite_statistics 
+     where 1=1
+     <if test="searchVO!=null and searchVO.inviter!=null and searchVO.inviter!='' ">
+     and inviter like '%' || #{searchVO.inviter,jdbcType=VARCHAR} || '%' 
+     </if> 
+     <if test="searchVO!=null and searchVO.beInvited!=null and searchVO.beInvited!='' ">
+     and be_invited like '%' || #{searchVO.beInvited,jdbcType=VARCHAR} || '%' 
+     </if>
+     <if test="searchVO!=null and searchVO.option!=null and searchVO.option!='' ">
+     and opt=#{searchVO.option,jdbcType=VARCHAR}
+     </if>
+     order by creation_date DESC
+     </select>
+     
+     
+     <select id="findLastInviter" resultType="com.im.base.customize.GroupInviteVO"> 
+      select id,inviter inviter,be_invited beInvited,group_name groupName,opt option,creation_date creationDate
+     from wx_group_invite_statistics
+     where   
+     be_invited=#{searchVO.beInvited,jdbcType=VARCHAR}
+     and group_name=#{searchVO.groupName,jdbcType=VARCHAR}
+     and opt=#{searchVO.option,jdbcType=VARCHAR}
+     order by creation_date DESC
+     limit 1
+     </select>
+     
+     <select id="findInviteCount" resultType="java.lang.Integer"> 
+      select count(1) num from(
+          select count(1) num
+          from wx_group_invite_statistics
+          where   1=1
+          and inviter=#{searchVO.inviter,jdbcType=VARCHAR}
+          and be_invited=#{searchVO.beInvited,jdbcType=VARCHAR}
+          and opt=#{searchVO.option,jdbcType=VARCHAR}
+          <if test="searchVO!=null and searchVO.memberCount!=null ">
+           and member_count>=#{searchVO.memberCount,jdbcType=NUMERIC}
+          </if>
+          group by group_name
+      )
+      
+     </select>
+     
+     <select id="findFinalOptCount" resultType="java.lang.Integer"> 
+      select count(1) num from(
+            select count(1) num,group_name
+            from wx_group_invite_statistics t
+            where   1=1
+            <if test="searchVO!=null and searchVO.inviter!=null ">
+               and inviter=#{searchVO.inviter,jdbcType=VARCHAR}
+            </if> 
+            and be_invited=#{searchVO.beInvited,jdbcType=VARCHAR}
+            and opt=#{searchVO.option,jdbcType=VARCHAR}
+            and not EXISTS(select 1 from wx_group_invite_statistics s where s.opt!=#{searchVO.option,jdbcType=VARCHAR} and s.group_name=t.group_name and s.creation_date > t.creation_date)
+            group by t.group_name
+       )
+      
+     </select>
+      
+</mapper>

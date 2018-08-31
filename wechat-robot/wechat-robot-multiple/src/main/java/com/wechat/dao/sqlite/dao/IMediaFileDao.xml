@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.wechat.dao.sqlite.dao.IMediaFileDao">
+       
+       <insert id="save" useGeneratedKeys="true" keyProperty="fileVO.id"  >
+       INSERT INTO wx_media_file 
+       ( 
+       msg_id,
+       skey,
+       content,
+       md5,
+       remark,
+       creation_date,
+       last_update_date
+       )
+       VALUES 
+       ( 
+       #{fileVO.msgId,jdbcType=VARCHAR},
+       #{fileVO.skey,jdbcType=VARCHAR},
+       #{fileVO.content,jdbcType=VARCHAR},
+       #{fileVO.md5,jdbcType=VARCHAR},
+       #{fileVO.remark,jdbcType=VARCHAR},
+       datetime('now','+8 hour'),
+       datetime('now','+8 hour')
+       );
+    </insert>
+     
+      
+     <select id="query" resultType="com.im.base.vo.MediaFileVO"> 
+     select id,msg_id msgId,skey,content,md5,remark,creation_date creationDate,last_update_date lastUpdateDate
+     from wx_media_file  
+     order by creation_date DESC
+     </select>
+      
+      
+       <select id="find" resultType="com.im.base.vo.MediaFileVO"> 
+     select id,msg_id msgId,skey,content,md5,remark,creation_date creationDate,last_update_date lastUpdateDate
+     from wx_media_file  
+     where md5=#{md5,jdbcType=VARCHAR}
+     order by creation_date DESC
+     limit 1
+     </select>
+</mapper>

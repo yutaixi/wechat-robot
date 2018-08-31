@@ -1,0 +1,20 @@
+package com.im.ui.client;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.wechat.WechatClient;
+
+public class WechatClientService {
+
+	private static Map<String ,WechatClient> clientMap;
+	static
+	{
+		clientMap=new HashMap<String,WechatClient>();
+	}
+	public boolean createWechatClient()
+	{
+		return true;
+	}
+}

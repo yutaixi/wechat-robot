@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.wechat.dao.mysql.dao.ISubscriptionDao">
+      
+    <insert id="saveContent" useGeneratedKeys="true" keyProperty="content.id" >
+       insert  INTO weixin.wx_subscription_content 
+       (name, 
+       need_paid, 
+       content, 
+       version, 
+       type, 
+       des, 
+       app_id, 
+       app_name, 
+       fileSize, 
+       mediaId,
+       fileext,
+       msg_id,
+       category,
+       price,
+       owner,
+       can_trial,
+       need_single,
+       url) 
+       VALUES 
+      (
+       #{content.name,jdbcType=VARCHAR},
+       #{content.needPaid,jdbcType=VARCHAR}, 
+       #{content.content,jdbcType=VARCHAR},
+       #{content.version,jdbcType=NUMERIC},
+       #{content.type,jdbcType=VARCHAR},
+       #{content.des,jdbcType=VARCHAR},
+       #{content.appId,jdbcType=VARCHAR},
+       #{content.appName,jdbcType=VARCHAR},
+       #{content.fileSize,jdbcType=NUMERIC},
+       #{content.mediaId,jdbcType=VARCHAR},
+       #{content.fileext,jdbcType=VARCHAR},
+       #{content.msgId,jdbcType=VARCHAR}, 
+       #{content.category,jdbcType=VARCHAR},
+       #{content.price,jdbcType=NUMERIC},
+       #{content.owner,jdbcType=NUMERIC}, 
+       #{content.canTrial,jdbcType=BOOLEAN},
+       #{content.needSingle,jdbcType=BOOLEAN},
+       #{content.url,jdbcType=VARCHAR}
+      )
+      on DUPLICATE KEY UPDATE 
+       need_paid= #{content.needPaid,jdbcType=VARCHAR}, 
+       content= #{content.content,jdbcType=VARCHAR},
+       version=  #{content.version,jdbcType=NUMERIC},
+       type=#{content.type,jdbcType=VARCHAR}, 
+       des= #{content.des,jdbcType=VARCHAR},
+       app_id= #{content.appId,jdbcType=VARCHAR},
+       app_name= #{content.appName,jdbcType=VARCHAR},
+       fileSize=  #{content.fileSize,jdbcType=NUMERIC},
+       mediaId=#{content.mediaId,jdbcType=VARCHAR},
+       fileext=#{content.fileext,jdbcType=VARCHAR},
+       msg_id= #{content.msgId,jdbcType=VARCHAR}, 
+       category= #{content.category,jdbcType=VARCHAR},
+       price= #{content.price,jdbcType=NUMERIC},
+       owner=#{content.owner,jdbcType=NUMERIC},
+       can_trial=#{content.canTrial,jdbcType=BOOLEAN},
+       need_single=#{content.needSingle,jdbcType=BOOLEAN},
+       url=#{content.url,jdbcType=VARCHAR};
+        
+    </insert>
+    
+      <insert id="updateKeywordMatch"  > 
+        <foreach item="item" index="index" collection="keywords" > 
+        insert  INTO weixin.wx_keyword_match
+           (
+           keyword,
+           content_id
+           )
+           values
+           (
+           #{item,jdbcType=VARCHAR},
+           #{content.id,jdbcType=NUMERIC}
+           )
+           on DUPLICATE KEY UPDATE 
+           content_id=#{content.id,jdbcType=NUMERIC}; 
+        </foreach> 
+      </insert>
+      
+      <insert id="saveKeyword"  useGeneratedKeys="true" keyProperty="keyword.id"  >  
+         insert  INTO weixin.wx_keyword
+           ( 
+           keyword,
+           last_update_time
+           )
+           values
+           ( 
+           #{keyword.keyword,jdbcType=VARCHAR},
+           current_timestamp
+           ) 
+           on DUPLICATE KEY UPDATE 
+           last_update_time=current_timestamp;  
+      </insert>
+       
+        <insert id="saveKeywordContentMatch"  >  
+         insert  INTO weixin.wx_keyword_cont_match
+           ( 
+           keyword_id,
+           content_id,
+           last_update_time
+           )
+           values
+           ( 
+           #{keyword.id,jdbcType=NUMERIC},
+           #{content.id,jdbcType=NUMERIC},
+           current_timestamp
+           ) 
+           on DUPLICATE KEY UPDATE 
+           last_update_time=current_timestamp; 
+      </insert>
+      
+      <insert id="saveKeywordExt"  >  
+         insert  INTO weixin.wx_keyword_ext
+           ( 
+           parent_id,
+           keyword_id,
+           last_update_time
+           )
+           values
+           <foreach collection="labels" item="item" separator=",">
+           ( 
+           #{keyword.id,jdbcType=NUMERIC},
+           #{item.id,jdbcType=NUMERIC},
+           current_timestamp
+           )
+           </foreach> 
+           on DUPLICATE KEY UPDATE 
+           last_update_time=current_timestamp; 
+      </insert>
+       
+       
+      
+      <select id="getKeywordList" resultMap="keywordVOMap">
+      SELECT kall.id,kall.match_id,kall.keyword,cont.ID cont_id,cont.name,cont.des,cont.need_paid needPaid,
+      cont.content,cont.version,cont.type,cont.fileSize,cont.mediaId,cont.fileext,
+      cont.app_id appId,cont.app_name appName,cont.url,cont.msg_id msgId,cont.category,
+      cont.price,cont.owner,cont.can_trial canTrial,cont.need_single needSingle
+      FROM (
+        select k.id,ifnull(ext.parent_id,k.id) match_id,k.keyword
+		from weixin.wx_keyword k
+        left join weixin.wx_keyword_ext ext
+        on ext.keyword_id=k.id
+        ) kall
+        inner join weixin.wx_keyword_cont_match m 
+	    on m.keyword_id=kall.match_id
+      inner JOIN WEIXIN.wx_subscription_content cont
+      ON cont.ID=m.content_id 
+      where 1=1
+      and cont.owner=#{owner,jdbcType=NUMERIC}
+      </select>
+      
+      
+      <resultMap  id="keywordVOMap" type="com.subscription.KeywordVO">
+        <id property="id" column="id" />  
+        <result property="keyword" column="keyword" />
+        <collection property="contentList" ofType="com.subscription.content.SubscriptionContent">
+          <id property="id" column="cont_id"/>
+          <result property="name" column="name" />
+          <result property="des" column="des" />
+          <result property="needPaid" column="needPaid" />
+          <result property="content" column="content" />
+          <result property="version" column="version" />
+          <result property="type" column="type" />
+          <result property="fileSize" column="fileSize" />
+          <result property="mediaId" column="mediaId" />
+          <result property="fileext" column="fileext" />
+          <result property="appId" column="appId" />
+          <result property="appName" column="appName" />
+          <result property="url" column="url" />
+          <result property="msgId" column="msgId" /> 
+          <result property="category" column="category" /> 
+          <result property="price" column="price" /> 
+           <result property="canTrial" column="canTrial" /> 
+            <result property="needSingle" column="needSingle" /> 
+          <result property="owner" column="owner" /> 
+        </collection> 
+      </resultMap>
+      
+      <insert id="saveSubscription" useGeneratedKeys="true" keyProperty="subscription.id" >   
+        insert  INTO weixin.wx_subscription
+           (
+           contact_id,
+           content_id,
+           has_paid,
+           push_version,
+           expire_date
+           )
+           values
+           (
+           #{subscription.contactId,jdbcType=NUMERIC},
+           #{subscription.content.id,jdbcType=NUMERIC},
+           #{subscription.hasPaid,jdbcType=NUMERIC},
+           #{subscription.pushVersion,jdbcType=NUMERIC},
+           #{subscription.expireDate,jdbcType=TIMESTAMP}
+           )
+           on DUPLICATE KEY UPDATE  
+           has_paid=#{subscription.hasPaid,jdbcType=NUMERIC},
+           push_version=#{subscription.pushVersion,jdbcType=NUMERIC},
+           expire_date= #{subscription.expireDate,jdbcType=TIMESTAMP};
+      </insert>
+       <select id="getSubscription" resultType="com.subscription.Subscription">
+       select sub.id,sub.contact_id contactId,sub.content_id contentId,sub.has_paid hasPaid,
+       sub.push_version pushVersion,sub.expire_date expireDate
+          from weixin.wx_subscription sub
+          where sub.contact_id=#{contact.id,jdbcType=NUMERIC}
+          and sub.content_id=#{content.id,jdbcType=NUMERIC}
+      </select>
+      <select id="batchGetSubscription" resultMap="SubscriptionMap">
+       select sub.id,sub.contact_id contactId,sub.content_id contentId,sub.has_paid hasPaid,
+       sub.push_version pushVersion,sub.expire_date expireDate
+          from weixin.wx_subscription sub
+          where sub.contact_id=#{contact.id,jdbcType=NUMERIC}
+          and sub.content_id in
+          <foreach item="item" index="index" collection="contents" open="(" separator="," close=")" > 
+          #{item.id,jdbcType=NUMERIC}
+          </foreach>
+      </select>
+      <select id="getSyncPushSubscriptions" resultMap="SubscriptionMap"> 
+        <![CDATA[ 
+        SELECT sub.id,sub.contact_id contactId,sub.has_paid hasPaid,sub.push_version pushVersion,sub.expire_date expireDate,
+        cont.id contentId,cont.name,cont.des,cont.need_paid needPaid,cont.content,cont.version,
+        cont.type,cont.fileSize,cont.mediaId,cont.fileext,cont.app_id appId,cont.app_name appName,
+        cont.url,cont.msg_id msgId,cont.category,cont.price,cont.can_trial canTrial,
+        cont.need_single needSingle,sub.id subscriptionId,cont.owner
+        FROM weixin.wx_subscription sub
+        left join weixin.wx_subscription_content cont
+        on cont.id=sub.content_id 
+        where  1=1 
+        and sub.push_version<cont.version
+        and cont.owner= #{owner,jdbcType=NUMERIC}  
+        ]]>
+      </select>
+      
+      <resultMap type="com.subscription.Subscription" id="SubscriptionMap">
+         <id property="id" column="id" />  
+        <result property="contactId" column="contactId" />
+        <result property="hasPaid" column="hasPaid" />
+        <result property="pushVersion" column="pushVersion" />
+        <result property="expireDate" column="expireDate" />
+        
+        <collection property="content" ofType="com.subscription.content.SubscriptionContent">
+          <id property="id" column="contentId"/>
+          <result property="name" column="name" />
+          <result property="des" column="des" />
+          <result property="needPaid" column="needPaid" />
+          <result property="content" column="content" />
+          <result property="version" column="version" />
+          <result property="type" column="type" />
+          <result property="fileSize" column="fileSize" />
+          <result property="mediaId" column="mediaId" />
+          <result property="fileext" column="fileext" />
+          <result property="appId" column="appId" />
+          <result property="appName" column="appName" />
+          <result property="url" column="url" />
+          <result property="msgId" column="msgId" /> 
+          <result property="category" column="category" /> 
+          <result property="price" column="price" /> 
+          <result property="canTrial" column="canTrial" /> 
+          <result property="needSingle" column="needSingle" /> 
+          <result property="subscriptionId" column="subscriptionId" /> 
+          <result property="owner" column="owner" /> 
+        </collection> 
+      </resultMap>
+</mapper>

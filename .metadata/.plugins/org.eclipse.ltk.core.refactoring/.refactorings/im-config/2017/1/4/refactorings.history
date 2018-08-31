@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Move element &apos;WechatConfig.java&apos; to &apos;im-robot-core/src/main/java/com.wechat&apos;&#x0D;&#x0A;- Original project: &apos;im-config&apos;&#x0D;&#x0A;- Destination element: &apos;im-robot-core/src/main/java/com.wechat&apos;&#x0D;&#x0A;- Original element: &apos;com.im.config.WechatConfig.java&apos;&#x0D;&#x0A;- Update references to refactored element" description="Move compilation unit" destination="=im-robot-core/src\/main\/java&lt;com.wechat" element1="/src\/main\/java&lt;com.im.config{WechatConfig.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.move" patterns="*" policy="org.eclipse.jdt.ui.moveResources" qualified="false" references="true" stamp="1485072215225" units="1" version="1.0"/>
+</session>

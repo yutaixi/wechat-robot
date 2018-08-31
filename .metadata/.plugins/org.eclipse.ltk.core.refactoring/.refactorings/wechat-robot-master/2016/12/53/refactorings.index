@@ -1,0 +1,29 @@
+1482689960596	Rename type 'WechatRecommendInfo'
+1482696015557	Rename type 'MongoDbService'
+1482696270922	Move compilation unit
+1482936662998	Copy compilation unit
+1482938114595	Rename type 'WechatSendFileMsgAction'
+1482938203121	Delete element
+1482939931809	Move compilation unit
+1482939972348	Move compilation unit
+1482939976984	Move compilation unit
+1482940131401	Delete elements
+1482940139789	Delete element
+1482940231923	Rename method 'sendFileMsg'
+1482941025306	Delete element
+1482941115644	Move compilation units
+1482941852687	Delete element
+1482941860599	Delete element
+1482945883961	Delete elements
+1482945891789	Delete element
+1482951047282	Copy compilation unit
+1482992723349	Rename type 'WechatSendMsgAction'
+1482993394986	Rename type 'WechatMsgActionHelper'
+1483004601874	Copy file
+1483118864620	Copy compilation unit
+1483155281159	Copy compilation units
+1483183903935	Copy compilation unit
+1483184948955	Copy compilation units
+1483184984061	Copy compilation units
+1483196740937	Copy compilation unit
+1483210464472	Copy compilation unit

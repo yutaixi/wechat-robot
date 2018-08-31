@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.wechat.dao.sqlite.dao.IGroupInviteJobLogDao">
+       
+       <insert id="saveLog" useGeneratedKeys="true" keyProperty="log.id"  >
+       INSERT INTO wx_group_invite_job_log 
+       ( 
+       operator,
+       invite_nick_name,
+       to_group_name,
+       status,
+       reason,
+       ret,
+       creation_date,
+       last_update_date
+       )
+       VALUES 
+       ( 
+       #{log.operator,jdbcType=VARCHAR},
+       #{log.inviteNickName,jdbcType=VARCHAR},
+       #{log.toGroupName,jdbcType=VARCHAR},
+       #{log.status,jdbcType=VARCHAR},
+       #{log.reason,jdbcType=VARCHAR},
+       #{log.ret,jdbcType=NUMERIC},
+       datetime('now','+8 hour'),
+       datetime('now','+8 hour')
+       );
+    </insert>
+     
+      
+     
+     <select id="queryGroupInviteLog" resultType="com.im.base.log.WechatGroupInviteLog"> 
+     select id,operator ,invite_nick_name inviteNickName ,to_group_name toGroupName,status,creation_date creationDate,
+     reason,ret
+     from wx_group_invite_job_log 
+     order by creationDate desc
+     </select>
+     
+      <select id="findFirstRecord" resultType="com.im.base.log.WechatGroupInviteLog"> 
+     select id,operator ,invite_nick_name inviteNickName ,to_group_name toGroupName,status,creation_date creationDate,
+     reason,ret
+     from wx_group_invite_job_log  
+     where operator=#{log.operator,jdbcType=VARCHAR}
+     and invite_nick_name=#{log.inviteNickName,jdbcType=VARCHAR}
+     and to_group_name=#{log.toGroupName,jdbcType=VARCHAR} 
+     order by creation_date desc
+     limit 1
+     </select>
+     
+     
+</mapper>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;security&apos; to &apos;im-security&apos;" description="Rename resource &apos;security&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="/security" name="im-security" stamp="1483773379261" updateReferences="true"/>
+</session>

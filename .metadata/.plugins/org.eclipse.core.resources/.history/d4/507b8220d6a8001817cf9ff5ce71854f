@@ -1,0 +1,9 @@
+package com.im.test;
+
+import java.util.Random;
+
+public class FinalTest {
+
+	static Random rand=new Random();
+	private final int value1=9;
+}

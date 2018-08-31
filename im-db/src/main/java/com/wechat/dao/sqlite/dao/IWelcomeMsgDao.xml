@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.wechat.dao.sqlite.dao.IWelcomeMsgDao">
+       
+       <insert id="saveWelcomeMsg" useGeneratedKeys="true" keyProperty="msg.id"  >
+       INSERT INTO wx_welcome_msg 
+       ( 
+       msg_type,
+       content,
+       display_order,
+       creation_date,
+       last_update_date
+       )
+       VALUES 
+       ( 
+       #{msg.MsgType,jdbcType=VARCHAR},
+       #{msg.Content,jdbcType=VARCHAR},
+       #{msg.displayOrder,jdbcType=NUMERIC},
+       datetime('now'),
+       datetime('now')
+       );
+    </insert>
+     
+     <update id="updateWelcomeMsg"> 
+     update wx_welcome_msg set
+     msg_type=#{msg.MsgType,jdbcType=VARCHAR},
+     content= #{msg.Content,jdbcType=VARCHAR},
+     display_order=#{msg.displayOrder,jdbcType=NUMERIC},
+     last_update_date=datetime('now')
+     where id=#{msg.id,jdbcType=NUMERIC}
+     </update>
+     
+     <select id="queryAllWelcomeMsg" resultType="com.im.base.wechat.WechatMsg"> 
+     select id,msg_type MsgType,content Content ,display_order displayOrder
+     from wx_welcome_msg 
+     order by displayOrder desc
+     </select>
+     
+     <delete id="deleteWelcomeMsg">
+     delete from wx_welcome_msg where id=#{msg.id,jdbcType=NUMERIC}
+     
+     </delete>
+     
+</mapper>

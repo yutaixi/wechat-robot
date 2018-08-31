@@ -1,0 +1,342 @@
+package com.im.ui.wechatui.pane;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+
+import javax.swing.DefaultCellEditor;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document; 
+
+import com.wechat.WechatConfig;
+import com.wechat.bean.WechatMsg; 
+import com.wechat.bean.WechatMsgType;
+import com.wechat.dao.sqlite.service.WelcomeMsgService;
+
+public class FriendVerifyPanel extends JPanel {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private JTable welcomeMsgTable;
+	private DefaultTableModel welcomeMsgDataModel;
+	private static final Object[] welcomeMsgColumnNames = { "", "序号", "类型",
+			"内容" };
+	private JTextField inviteGroupName;
+    private static JScrollPane welcomMsgPane;
+    
+    WelcomeMsgService welcomeMsgService=new WelcomeMsgService();
+    
+	public FriendVerifyPanel(final WechatConfig wechatConfig) {
+
+		// tabbedPane.setEnabledAt(1, false);
+		this.setLayout(null);
+
+		JCheckBox checkBox = new JCheckBox("自动同意好友验证");
+		checkBox.setSelected(wechatConfig.isAutoAgreeAddFriend());
+		checkBox.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				JCheckBox checkBox = (JCheckBox) e.getItem();
+				wechatConfig.setAutoAgreeAddFriend(checkBox.isSelected());
+				// for(WechatClient client :
+				// clientStore.getClientMap().values())
+				// {
+				// client.getConfig().setAutoAgreeAddFriend(checkBox.isSelected());
+				// LOGGER.info("自动同意好友验证:"+checkBox.isSelected());
+				// }
+			}
+		});
+
+		checkBox.setBounds(10, 9, 156, 27);
+		this.add(checkBox);
+
+		JCheckBox checkBox_1 = new JCheckBox("收到好友推荐自动加好友");
+		checkBox_1.setSelected(wechatConfig.isAutoAddFriendOnSharecardMsg());
+		checkBox_1.setBounds(257, 9, 244, 27);
+		checkBox_1.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent arg0) {
+				JCheckBox checkBox = (JCheckBox) arg0.getItem();
+				wechatConfig.setAutoAddFriendOnSharecardMsg(checkBox.isSelected());
+				// for(WechatClient client :
+				// clientStore.getClientMap().values())
+				// {
+				// client.getConfig().setAutoAddFriendOnSharecardMsg(checkBox.isSelected());
+				// LOGGER.info("收到好友推荐自动加好友:"+checkBox.isSelected());
+				// }
+			}
+
+		});
+		this.add(checkBox_1);
+
+		// 欢迎语
+		welcomMsgPane = new JScrollPane();
+		welcomMsgPane
+				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		welcomMsgPane.setBounds(10, 80, 659, 200);
+		this.add(welcomMsgPane);
+
+		welcomeMsgDataModel = new DefaultTableModel(welcomeMsgColumnNames, 0) {
+			@Override
+			public boolean isCellEditable(int arg0, int arg1) {
+				if (arg1 == 1)
+					return false;
+				return true;
+			}
+
+		};
+
+		Object[] welcomeMsgRowData = new Object[welcomeMsgColumnNames.length];
+
+		Map<Long, WechatMsg> welcomeMsgMap = wechatConfig.getWelcomeMsgMap();
+		if(welcomeMsgMap!=null && !welcomeMsgMap.isEmpty())
+		{
+			Set<Long> welcomMsgKeySet = welcomeMsgMap.keySet();
+			Vector<Long> welcomMsgKeyVector = new Vector(welcomMsgKeySet);
+			Collections.sort(welcomMsgKeyVector);
+			for (Long temp : welcomMsgKeyVector) {
+				JCheckBox checkbox = new JCheckBox();
+				checkbox.setName(String.valueOf(temp));
+				welcomeMsgRowData[0] = checkbox;
+				welcomeMsgRowData[1] = temp;
+				switch(welcomeMsgMap.get(temp).getMsgType())
+				{
+				case WechatMsgType.MSGTYPE_TEXT:
+					welcomeMsgRowData[2] = welcomeMsgMap.get(temp).getMsgType();
+					break;
+				case WechatMsgType.MSGTYPE_IMAGE:
+					welcomeMsgRowData[2] = welcomeMsgMap.get(temp).getMsgType();
+					break;
+				case WechatMsgType.MSGTYPE_VIDEO:
+					welcomeMsgRowData[2] = welcomeMsgMap.get(temp).getMsgType();
+					break;
+				case WechatMsgType.MSGTYPE_APP:
+					welcomeMsgRowData[2] = welcomeMsgMap.get(temp).getMsgType();
+					break;
+				}
+				
+				welcomeMsgRowData[3] = welcomeMsgMap.get(temp).getContent();
+				welcomeMsgDataModel.addRow(welcomeMsgRowData); 
+			}
+		}
+		
+
+		welcomeMsgTable = new JTable(welcomeMsgDataModel) {
+
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				// TODO Auto-generated method stub
+				super.tableChanged(e);
+				// repaint();
+				if (welcomeMsgTable == null) {
+					return;
+				}
+				int rowIndex = e.getLastRow();
+				int columnIndex = e.getColumn();
+				if(columnIndex==1)
+				{
+					return;
+				}
+				if (e.getType() == TableModelEvent.UPDATE) {
+					Object indexObj=welcomeMsgTable.getValueAt(e.getLastRow(), 1); 
+					Long index = -1L;
+					if(indexObj!=null && !"".equalsIgnoreCase(indexObj.toString()))
+					{
+						index=Long.parseLong(indexObj.toString());
+					}
+					WechatMsg wechatMsg=null;
+					if(index>-1)
+					{
+						wechatMsg=wechatConfig.getWelcomeMsgMap().get(index);
+					}
+					if(wechatMsg==null)
+					{
+						wechatMsg=new WechatMsg();
+					}
+					
+					String newvalue = welcomeMsgTable.getValueAt(e.getLastRow(), e.getColumn()).toString();
+					if (e.getColumn() == 2) {
+						if("文字".equalsIgnoreCase(newvalue))
+						{
+							wechatMsg.setMsgType(WechatMsgType.MSGTYPE_TEXT);
+						}else if("图片".equalsIgnoreCase(newvalue))
+						{
+							wechatMsg.setMsgType(WechatMsgType.MSGTYPE_IMAGE);
+						}else if("视频".equalsIgnoreCase(newvalue))
+						{
+							wechatMsg.setMsgType(WechatMsgType.MSGTYPE_VIDEO);
+						}else if("文档".equalsIgnoreCase(newvalue))
+						{
+							wechatMsg.setMsgType(WechatMsgType.MSGTYPE_APP);
+						}
+						
+					} else if (e.getColumn() == 3) {
+						wechatMsg.setContent(newvalue);
+					}
+					if(wechatMsg.getMsgType()!=0 || (wechatMsg.getContent()!=null && !"".equalsIgnoreCase(wechatMsg.getContent())))
+					{
+						welcomeMsgService.saveWelcomeMsg(wechatMsg);
+						wechatConfig.getWelcomeMsgMap().put(wechatMsg.getId(), wechatMsg); 
+						welcomeMsgTable.setValueAt(wechatMsg.getId(), rowIndex, 1);
+						System.out.println(wechatMsg.getId());
+					} 
+					 
+					System.out.println(newvalue);
+				}else
+				{
+					System.out.println(e.getType());
+				}
+
+			}
+		};
+		welcomeMsgTable.setBounds(0, 0, 668, 462);
+		welcomeMsgTable.setRowSelectionAllowed(true);
+		welcomeMsgTable.getColumn("").setCellEditor( new CheckButtonEditor(new JCheckBox()));
+		welcomeMsgTable.getColumn("").setCellRenderer(new CheckBoxRenderer());
+		welcomeMsgTable.getColumnModel().getColumn(0).setPreferredWidth(25);
+		welcomeMsgTable.getColumnModel().getColumn(1).setPreferredWidth(60);
+		welcomeMsgTable.getColumnModel().getColumn(2).setPreferredWidth(60);
+		welcomeMsgTable.getColumnModel().getColumn(3).setPreferredWidth(495);
+		welcomeMsgTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		TableColumn msgTypeColumn = welcomeMsgTable.getColumnModel().getColumn(2);
+
+		String[] jiguan = { "文字", "图片", "视频","文档" };
+		JComboBox msgTypeBox = new JComboBox(jiguan);
+		msgTypeColumn.setCellEditor(new DefaultCellEditor(msgTypeBox));
+		welcomMsgPane.setViewportView(welcomeMsgTable);
+
+		JCheckBox checkBox_3 = new JCheckBox("同意好友验证后添邀请进群（多个群名分号分隔）");
+		checkBox_3.setBounds(10, 292, 399, 27);
+		checkBox_3.setSelected(wechatConfig.isAfterVeifyInviteToGroup());
+		checkBox_3.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				JCheckBox checkBox = (JCheckBox) e.getItem();
+				wechatConfig.setAfterVeifyInviteToGroup(checkBox.isSelected());
+			}
+		});
+		this.add(checkBox_3);
+
+		inviteGroupName = new JTextField();
+		inviteGroupName.setBounds(14, 328, 644, 27);
+		this.add(inviteGroupName);
+		inviteGroupName.setColumns(10);
+		inviteGroupName.setText(wechatConfig.getAfterVeifyInviteToGroupName());
+		inviteGroupName.getDocument().addDocumentListener(new DocumentListener() {
+					private void setText(DocumentEvent e) {
+						Document doc = e.getDocument();
+						String text = null;
+						try {
+							text = doc.getText(doc.getStartPosition()
+									.getOffset(), doc.getEndPosition()
+									.getOffset());
+							if (text != null && text.endsWith("\n")) {
+								text = text.substring(0, text.indexOf("\n"));
+							}
+						} catch (BadLocationException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						wechatConfig.setAfterVeifyInviteToGroupName(text);
+					}
+
+					@Override
+					public void removeUpdate(DocumentEvent e) {
+						setText(e);
+					}
+
+					@Override
+					public void insertUpdate(DocumentEvent e) {
+						setText(e);
+					}
+
+					@Override
+					public void changedUpdate(DocumentEvent e) {
+						setText(e);
+					}
+				});
+
+		JSeparator separator = new JSeparator();
+		separator.setBounds(10, 45, 659, 2);
+		this.add(separator);
+
+		JButton btnNewButton = new JButton("添加");
+		btnNewButton.setBounds(20, 55, 74, 19);
+		btnNewButton.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {   
+				Object[] rowData = new Object[welcomeMsgColumnNames.length];
+				rowData[0]=new JCheckBox();  
+				rowData[1]="";
+				rowData[2]="";
+				rowData[3]="";
+				welcomeMsgDataModel.addRow(rowData);
+				
+				JScrollBar   sbar=welcomMsgPane.getVerticalScrollBar();
+				sbar.setValue(sbar.getMaximum());
+			}
+			
+		});
+		this.add(btnNewButton);
+
+		JButton delWelcomeMsgBtn = new JButton("删除");
+		delWelcomeMsgBtn.setBounds(97, 55, 74, 19);
+		delWelcomeMsgBtn.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Vector<Object> allRows=welcomeMsgDataModel.getDataVector();  
+				for(int i=allRows.size()-1;i>-1;i--)
+				{
+					Vector<Object> dataArray=(Vector<Object>)allRows.get(i);
+					JCheckBox checkBox=(JCheckBox)dataArray.get(0);
+					Object indexObj=dataArray.get(1); 
+					Long index=-1L;
+					if(indexObj!=null && !"".equalsIgnoreCase(indexObj.toString()))
+					{
+						index=Long.parseLong(indexObj.toString());
+					}
+					if(checkBox.isSelected())
+					{
+						welcomeMsgDataModel.removeRow(i);
+						if(index>-1)
+						{
+							wechatConfig.getWelcomeMsgMap().remove(index);
+						}
+					} 
+				}
+				 
+				 
+			}
+			
+		});
+		this.add(delWelcomeMsgBtn);
+		 
+	}
+
+}

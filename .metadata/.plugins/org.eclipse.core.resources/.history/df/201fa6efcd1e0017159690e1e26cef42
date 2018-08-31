@@ -1,0 +1,16 @@
+package com.im.ui.schedule;
+
+import com.im.schedule.timer.ScheduleTask;
+
+public class WechatTimingMsgTask extends ScheduleTask{
+
+	@Override
+	public void run() {
+		 
+		
+	}
+	
+	public WechatTimingMsgTask(List<WechatTimingMsgVO> timingMsg)
+	
+
+}

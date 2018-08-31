@@ -1,0 +1,8 @@
+package com.im.test;
+
+import java.util.Random;
+
+public class FinalTest {
+
+	static Random random=new Random();
+}

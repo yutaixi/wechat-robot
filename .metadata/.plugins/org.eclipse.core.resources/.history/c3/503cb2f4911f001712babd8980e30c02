@@ -1,0 +1,71 @@
+package com.im.ui.wechatui.pane.groupmanage;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+
+public class InviteManage extends JPanel{
+
+	private JTextField textField_2;
+	
+	public InviteManage()
+	{
+		
+		this.setLayout(null);
+		
+		JLabel label_2 = new JLabel("好友列表");
+		label_2.setBounds(41, 13, 92, 18);
+		this.add(label_2);
+		
+		JScrollPane friendScrollPane = new JScrollPane();
+		friendScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		friendScrollPane.setBounds(14, 34, 129, 383);
+		this.add(friendScrollPane);
+		
+		JList friendList = new JList();
+		friendScrollPane.setViewportView(friendList);
+		
+		JButton buttonInvite = new JButton("邀请到");
+		buttonInvite.setBounds(159, 32, 113, 27);
+		this.add(buttonInvite);
+		
+		JScrollPane groupScrollPane = new JScrollPane();
+		groupScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		groupScrollPane.setBounds(382, 34, 172, 202);
+		this.add(groupScrollPane);
+		
+		JList inviteGroupList = new JList();
+		groupScrollPane.setViewportView(inviteGroupList);
+		
+		JButton button = new JButton("停止邀请");
+		button.setBounds(159, 72, 113, 27);
+		this.add(button);
+		
+		JLabel label_1 = new JLabel("邀请间隔");
+		label_1.setBounds(157, 122, 72, 18);
+		this.add(label_1);
+		
+		textField_2 = new JTextField();
+		textField_2.setBounds(222, 119, 56, 24);
+		this.add(textField_2);
+		textField_2.setColumns(10);
+		
+		JLabel label_3 = new JLabel("秒");
+		label_3.setBounds(283, 125, 35, 18);
+		this.add(label_3);
+		
+		JScrollPane inviteGroupLogScrollPane = new JScrollPane();
+		inviteGroupLogScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		inviteGroupLogScrollPane.setBounds(157, 254, 507, 163);
+		this.add(inviteGroupLogScrollPane);
+		
+		JTextArea inviteGroupLogTextArea = new JTextArea();
+		inviteGroupLogScrollPane.setViewportView(inviteGroupLogTextArea);
+		
+	}
+}

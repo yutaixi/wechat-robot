@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.wechat.dao.mysql.dao.IContactDao">
+      
+    <insert id="insertOrUpdateContact" useGeneratedKeys="true" keyProperty="contact.id" >
+       insert  INTO weixin.wx_contact 
+       (owner, 
+       alias, 
+       nick_name, 
+       head_img_url, 
+       sex, 
+       province, 
+       city, 
+       remark_name, 
+       uin, 
+       is_group) 
+       VALUES 
+      (
+       #{owner,jdbcType=NUMERIC},
+       #{contact.Alias,jdbcType=VARCHAR}, 
+       #{contact.NickName,jdbcType=VARCHAR},
+       #{contact.HeadImgUrl,jdbcType=VARCHAR},
+       #{contact.Sex,jdbcType=VARCHAR},
+       #{contact.Province,jdbcType=VARCHAR},
+       #{contact.City,jdbcType=VARCHAR},
+       #{contact.RemarkName,jdbcType=VARCHAR},
+       #{contact.Uin,jdbcType=VARCHAR},
+       #{contact.isGroup,jdbcType=NUMERIC}
+      )
+      on DUPLICATE KEY UPDATE 
+       alias=#{contact.Alias,jdbcType=VARCHAR},   
+       head_img_url= #{contact.HeadImgUrl,jdbcType=VARCHAR}, 
+       sex= #{contact.Sex,jdbcType=NUMERIC}, 
+       province= #{contact.Province,jdbcType=VARCHAR}, 
+       city= #{contact.City,jdbcType=VARCHAR}, 
+       remark_name= #{contact.RemarkName,jdbcType=VARCHAR},  
+       uin= #{contact.Uin,jdbcType=NUMERIC},  
+       is_group= #{contact.isGroup,jdbcType=NUMERIC};
+      
+    </insert>
+    
+     
+</mapper>

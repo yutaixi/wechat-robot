@@ -1,0 +1,94 @@
+package com.im.ui.schedule; 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.im.timer.ScheduleTask;
+import com.subscription.Subscription;
+import com.subscription.content.CategoriedContent;
+import com.subscription.content.ContentCategory;
+import com.subscription.content.ContentType;
+import com.subscription.content.SubscriptionContent;
+import com.wechat.WebWechatClient; 
+import com.wechat.WechatClient;
+import com.wechat.bean.WechatContact;
+import com.wechat.core.WechatContext;
+import com.wechat.core.WechatStore;
+import com.wechat.dao.mysql.service.SubscriptionDaoService;
+
+public class SendMsgTask extends ScheduleTask{
+
+	private WechatClient client;
+	 
+	
+	private SubscriptionDaoService subscriptionDaoService=new SubscriptionDaoService();
+	@Override
+	public void run() { 
+		if(!getContactMap())
+		{
+			return;
+		}
+		
+		 
+		 
+	}
+	
+	private void savePushVersion(Long contactId,List<SubscriptionContent> contents)
+	{
+		if(contents==null || contents.isEmpty())
+		{
+			return;
+		}
+		Subscription subscription=null;
+		for(SubscriptionContent temp : contents)
+		{
+			subscription=new Subscription();
+			subscription.setContactId(contactId);
+			subscription.setContent(temp);
+			subscription.setPushVersion(temp.getVersion());
+			subscription.setHasPaid(true);
+			subscriptionDaoService.saveSubscription(subscription);
+		}
+		
+	}
+	
+	private String getTextUrlMsg(List<SubscriptionContent> contents)
+	{
+		if(contents==null || contents.isEmpty())
+		{
+			return "";
+		}
+		StringBuffer buffer=new StringBuffer();
+		for(SubscriptionContent temp : contents)
+		{
+			buffer.append("《"+temp.getName()+"》\r\n"+temp.getUrl()+"\r\n");
+		}
+		buffer.append("以上内容有更新，自动发送不用回");
+		return buffer.toString();
+	}
+	public SendMsgTask(WechatClient client)
+	{
+		this.client=client;
+	}
+	
+	private boolean getContactMap()
+	{
+		WechatContext wechatContext=(WechatContext)client;
+		WechatStore store=wechatContext.getWechatStore();
+		Map<String, WechatContact> contacts=store.getBuddyList();
+		if(contacts==null || contacts.isEmpty())
+		{
+			return false;
+		}
+		contactMap=new HashMap<Long,WechatContact>();
+		for(WechatContact temp : contacts.values())
+		{
+			contactMap.put(temp.getId(), temp);
+		}
+		return true;
+	}
+	 
+
+}

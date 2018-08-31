@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<libraryInfos>
+<libraryInfo home="E:\Program Files\Java\jre 1.8" version="1.8.0_92">
+<bootpath>
+<entry path="E:\Program Files\Java\jre 1.8\lib\resources.jar"/>
+<entry path="E:\Program Files\Java\jre 1.8\lib\rt.jar"/>
+<entry path="E:\Program Files\Java\jre 1.8\lib\sunrsasign.jar"/>
+<entry path="E:\Program Files\Java\jre 1.8\lib\jsse.jar"/>
+<entry path="E:\Program Files\Java\jre 1.8\lib\jce.jar"/>
+<entry path="E:\Program Files\Java\jre 1.8\lib\charsets.jar"/>
+<entry path="E:\Program Files\Java\jre 1.8\lib\jfr.jar"/>
+<entry path="E:\Program Files\Java\jre 1.8\classes"/>
+</bootpath>
+<extensionDirs>
+<entry path="E:\Program Files\Java\jre 1.8\lib\ext"/>
+<entry path="C:\WINDOWS\Sun\Java\lib\ext"/>
+</extensionDirs>
+<endorsedDirs>
+<entry path="E:\Program Files\Java\jre 1.8\lib\endorsed"/>
+</endorsedDirs>
+</libraryInfo>
+<libraryInfo home="E:\tools\Java\jdk1.7.0_80" version="1.7.0_80">
+<bootpath>
+<entry path="E:\tools\Java\jdk1.7.0_80\jre\lib\resources.jar"/>
+<entry path="E:\tools\Java\jdk1.7.0_80\jre\lib\rt.jar"/>
+<entry path="E:\tools\Java\jdk1.7.0_80\jre\lib\sunrsasign.jar"/>
+<entry path="E:\tools\Java\jdk1.7.0_80\jre\lib\jsse.jar"/>
+<entry path="E:\tools\Java\jdk1.7.0_80\jre\lib\jce.jar"/>
+<entry path="E:\tools\Java\jdk1.7.0_80\jre\lib\charsets.jar"/>
+<entry path="E:\tools\Java\jdk1.7.0_80\jre\lib\jfr.jar"/>
+<entry path="E:\tools\Java\jdk1.7.0_80\jre\classes"/>
+</bootpath>
+<extensionDirs>
+<entry path="E:\tools\Java\jdk1.7.0_80\jre\lib\ext"/>
+<entry path="C:\WINDOWS\Sun\Java\lib\ext"/>
+</extensionDirs>
+<endorsedDirs>
+<entry path="E:\tools\Java\jdk1.7.0_80\jre\lib\endorsed"/>
+</endorsedDirs>
+</libraryInfo>
+<libraryInfo home="E:\tools\Java\jre7" version="1.7.0_80">
+<bootpath>
+<entry path="E:\tools\Java\jre7\lib\resources.jar"/>
+<entry path="E:\tools\Java\jre7\lib\rt.jar"/>
+<entry path="E:\tools\Java\jre7\lib\sunrsasign.jar"/>
+<entry path="E:\tools\Java\jre7\lib\jsse.jar"/>
+<entry path="E:\tools\Java\jre7\lib\jce.jar"/>
+<entry path="E:\tools\Java\jre7\lib\charsets.jar"/>
+<entry path="E:\tools\Java\jre7\lib\jfr.jar"/>
+<entry path="E:\tools\Java\jre7\classes"/>
+</bootpath>
+<extensionDirs>
+<entry path="E:\tools\Java\jre7\lib\ext"/>
+<entry path="C:\WINDOWS\Sun\Java\lib\ext"/>
+</extensionDirs>
+<endorsedDirs>
+<entry path="E:\tools\Java\jre7\lib\endorsed"/>
+</endorsedDirs>
+</libraryInfo>
+</libraryInfos>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.wechat.dao.sqlite.dao.IWechatKeywordDao">
+       
+       <insert id="saveKeyword" useGeneratedKeys="true" keyProperty="keyword.id"  >
+       INSERT INTO wx_keyword
+       ( 
+       keyword,
+       msg_type,
+       content,
+       min_delay,
+       max_delay,
+       display_order, 
+       creation_date,
+       last_update_date
+       )
+       VALUES 
+       ( 
+       #{keyword.keyword,jdbcType=VARCHAR},
+       #{keyword.msgType,jdbcType=NUMERIC},
+       #{keyword.content,jdbcType=VARCHAR},
+       #{keyword.minDelay,jdbcType=NUMERIC},
+       #{keyword.maxDelay,jdbcType=NUMERIC},
+       #{keyword.displayOrder,jdbcType=NUMERIC},
+       datetime('now','+8 hour'),
+       datetime('now','+8 hour')
+       );
+    </insert>
+     
+     <update id="updateKeyword"> 
+     update wx_keyword set
+     keyword=#{keyword.keyword,jdbcType=VARCHAR},
+     msg_type =#{keyword.msgType,jdbcType=NUMERIC},
+     content =#{keyword.content,jdbcType=VARCHAR},
+     min_delay =#{keyword.minDelay,jdbcType=NUMERIC},
+     max_delay =#{keyword.maxDelay,jdbcType=NUMERIC},
+     display_order =#{keyword.displayOrder,jdbcType=NUMERIC},
+     last_update_date=datetime('now','+8 hour')
+     where id=#{keyword.id,jdbcType=NUMERIC}
+     </update>
+     
+     <select id="queryAllKeyword" resultType="com.subscription.KeywordVO"> 
+     select id,keyword,msg_type msgType,content content ,display_order displayOrder,min_delay minDelay,max_delay maxDelay
+     from wx_keyword 
+     order by displayOrder
+     </select>
+     
+     <delete id="deleteKeyword">
+       delete from wx_keyword where id=#{keyword.id,jdbcType=NUMERIC} 
+     </delete>
+     
+</mapper>

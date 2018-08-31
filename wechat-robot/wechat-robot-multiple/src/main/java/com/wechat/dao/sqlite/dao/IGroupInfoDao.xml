@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.wechat.dao.sqlite.dao.IGroupInfoDao">
+       
+       <insert id="save" useGeneratedKeys="true" keyProperty="group.id"  >
+       INSERT INTO wx_group_info 
+       ( 
+       group_name,
+       member_count, 
+       creation_date,
+       last_update_date
+       )
+       VALUES 
+       ( 
+       #{group.NickName,jdbcType=VARCHAR},
+       #{group.MemberCount,jdbcType=NUMERIC}, 
+       datetime('now','+8 hour'),
+       datetime('now','+8 hour')
+       );
+    </insert>
+     
+      <update id="update">
+      update wx_group_info set 
+      group_name=#{group.NickName,jdbcType=VARCHAR},
+      member_count= #{group.MemberCount,jdbcType=NUMERIC}, 
+      last_update_date=datetime('now','+8 hour')
+      where id=#{group.id,jdbcType=NUMERIC}
+      </update>
+      
+      
+     <select id="query" resultType="com.im.base.wechat.WechatContact"> 
+     select id, group_name NickName,member_count MemberCount,group_owner,creation_date creationDate,last_update_date lastUpdateDate
+     from wx_group_info  
+     order by creation_date DESC
+     </select>
+     
+     <select id="findGroupByName" resultType="com.im.base.wechat.WechatContact" >
+     select id, group_name NickName,member_count MemberCount,group_owner,creation_date creationDate,last_update_date lastUpdateDate
+     from wx_group_info  
+     where group_name=#{groupName,jdbcType=VARCHAR}
+     limit 1
+     </select>
+      
+</mapper>

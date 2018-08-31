@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;im-ui/key/key.lic&apos; to &apos;key.lic1&apos;" description="Rename resource &apos;key.lic&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="key/key.lic" name="key.lic1" stamp="1485070312793" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;im-ui/key/key.lic1&apos; to &apos;key.lic&apos;" description="Rename resource &apos;key.lic1&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="key/key.lic1" name="key.lic" stamp="1485070898607" updateReferences="true"/>
+</session>

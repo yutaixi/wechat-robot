@@ -1,0 +1,31 @@
+package com.im.ui.client;
+
+import iqq.im.QQNotifyListener;
+import iqq.im.actor.SwingActorDispatcher;
+import iqq.im.event.QQNotifyEvent;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.wechat.WebWechatClient;
+import com.wechat.WechatClient;
+
+public class WechatClientService {
+
+	private static Map<String ,WechatClient> clientMap;
+	static
+	{
+		clientMap=new HashMap<String,WechatClient>();
+	}
+	public boolean createWechatClient()
+	{
+		final WechatClient mClient = new WebWechatClient(new QQNotifyListener() {
+	        @Override
+	        public void onNotifyEvent(QQNotifyEvent event) { 
+	        	mClient.handleEvent(event);
+	        }
+	    }, new SwingActorDispatcher());
+		return true;
+	}
+}

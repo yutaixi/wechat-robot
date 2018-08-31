@@ -1,0 +1,2 @@
+[0831 22:40:50 959 ERROR] [main] im.utils.FileUtil - read file error:java.io.FileNotFoundException: .\data\distributeLog.txt (系统找不到指定的文件。)
+[0831 22:40:51 065 INFO ] [AWT-EventQueue-0] security.service.LicenseUtil - 读取license失败，未找到key.lic文件

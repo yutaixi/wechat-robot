@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.wechat.dao.sqlite.dao.IFutureMsgDao">
+       
+       <insert id="saveFutureMsg" useGeneratedKeys="true" keyProperty="msg.id"  >
+       INSERT INTO wx_future_msg 
+       ( 
+       action,
+       msg_type,
+       content,
+       delay,
+       display_order,
+       creation_date,
+       last_update_date
+       )
+       VALUES 
+       ( 
+       #{msg.action,jdbcType=VARCHAR},
+       #{msg.MsgType,jdbcType=VARCHAR},
+       #{msg.Content,jdbcType=VARCHAR},
+       #{msg.delay,jdbcType=VARCHAR},
+       #{msg.displayOrder,jdbcType=NUMERIC},
+       datetime('now','+8 hour'),
+       datetime('now','+8 hour')
+       );
+    </insert>
+     
+     <update id="updateFutureMsg"> 
+     update wx_future_msg set
+     action=#{msg.action,jdbcType=VARCHAR},
+     msg_type=#{msg.MsgType,jdbcType=VARCHAR},
+     content= #{msg.Content,jdbcType=VARCHAR},
+     delay= #{msg.delay,jdbcType=NUMERIC},
+     display_order=#{msg.displayOrder,jdbcType=NUMERIC},
+     last_update_date=datetime('now','+8 hour')
+     where id=#{msg.id,jdbcType=NUMERIC}
+     </update>
+     
+     <select id="queryAllFutureMsg" resultType="com.im.base.wechat.FutureMsg"> 
+     select id,action,msg_type MsgType,content Content ,display_order displayOrder,delay
+     from wx_future_msg 
+     order by displayOrder
+     </select>
+     
+     <delete id="deleteFutureMsg">
+     delete from wx_future_msg where id=#{msg.id,jdbcType=NUMERIC}
+     
+     </delete>
+     
+</mapper>
