@@ -7,3 +7,6 @@
 
 # 主方法
 com.im.ui.wechatui.MainWindow
+
+# 声明
+未经允许禁止用于商业用途
